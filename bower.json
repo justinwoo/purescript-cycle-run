@@ -1,0 +1,17 @@
+{
+  "name": "purescript-cycle-run",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-console": "^1.0.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^1.0.0",
+    "purescript-xstream": "^0.1.2",
+    "purescript-test-unit": "^9.0.0"
+  }
+}
