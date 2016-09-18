@@ -1,5 +1,10 @@
 {
   "name": "purescript-cycle-run",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/justinwoo/purescript-cycle-run.git"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
@@ -7,11 +12,11 @@
     "output"
   ],
   "dependencies": {
-    "purescript-console": "^1.0.0"
+    "purescript-console": "^1.0.0",
+    "purescript-xstream": "^0.3.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^1.0.0",
-    "purescript-xstream": "^0.1.2",
     "purescript-test-unit": "^9.0.0"
   }
 }
