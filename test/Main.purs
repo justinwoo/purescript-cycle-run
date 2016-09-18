@@ -2,7 +2,7 @@ module Test.Main where
 
 import Prelude
 import Control.Alternative (empty)
-import Control.Cycle (run3, run2, CYCLE, run1)
+import Control.Cycle (CYCLE, run1, run2, run3, run4, run5)
 import Control.Monad.Aff (Aff, runAff, makeAff, liftEff')
 import Control.Monad.Aff.AVar (AVAR)
 import Control.Monad.Aff.Console (CONSOLE)
@@ -69,4 +69,23 @@ main = runTest do
           (  (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
           /\ (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
           /\ (\sink -> void $ runAff reject resolve $ expectStream [7,8,9] sink)
+          )
+    test "run4" do
+      makeAff \reject resolve ->
+        run4
+          (\a b c d -> (fromArray [1,2,3]) /\ (fromArray [4,5,6]) /\ (fromArray [7,8,9]) /\ (fromArray [10,11,12]))
+          (  (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
+          /\ (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
+          /\ (\sink -> void $ runAff reject resolve $ expectStream [7,8,9] sink)
+          /\ (\sink -> void $ runAff reject resolve $ expectStream [10,11,12] sink)
+          )
+    test "run5" do
+      makeAff \reject resolve ->
+        run5
+          (\a b c d e -> (fromArray [1,2,3]) /\ (fromArray [4,5,6]) /\ (fromArray [7,8,9]) /\ (fromArray [10,11,12]) /\ (fromArray [13,14,15]))
+          (  (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
+          /\ (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
+          /\ (\sink -> void $ runAff reject resolve $ expectStream [7,8,9] sink)
+          /\ (\sink -> void $ runAff reject resolve $ expectStream [10,11,12] sink)
+          /\ (\sink -> void $ runAff reject resolve $ expectStream [13,14,15] sink)
           )

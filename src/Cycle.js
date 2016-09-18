@@ -56,3 +56,48 @@ exports._run3 = function (_main, _drivers) {
     return Cycle.run(main, drivers);
   };
 };
+
+exports._run4 = function (_main, _drivers) {
+  return function () {
+    function main(sources) {
+      var sinks = _main(sources.a)(sources.b)(sources.c)(sources.d);
+      return {
+        a: sinks.value0.value0.value0,
+        b: sinks.value0.value0.value1,
+        c: sinks.value0.value1,
+        d: sinks.value1
+      };
+    }
+
+    var drivers = {
+      a: makeDriver(_drivers.value0.value0.value0),
+      b: makeDriver(_drivers.value0.value0.value1),
+      c: makeDriver(_drivers.value0.value1),
+      d: makeDriver(_drivers.value1)
+    }
+    return Cycle.run(main, drivers);
+  };
+};
+
+exports._run5 = function (_main, _drivers) {
+  return function () {
+    function main(sources) {
+      var sinks = _main(sources.a)(sources.b)(sources.c)(sources.d)(sources.e);
+      return {
+        a: sinks.value0.value0.value0.value0,
+        b: sinks.value0.value0.value0.value1,
+        c: sinks.value0.value0.value1,
+        d: sinks.value0.value1,
+        e: sinks.value1
+      };
+    }
+    var drivers = {
+      a: makeDriver(_drivers.value0.value0.value0.value0),
+      b: makeDriver(_drivers.value0.value0.value0.value1),
+      c: makeDriver(_drivers.value0.value0.value1),
+      d: makeDriver(_drivers.value0.value1),
+      e: makeDriver(_drivers.value1)
+    }
+    return Cycle.run(main, drivers);
+  };
+};
