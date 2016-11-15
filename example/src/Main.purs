@@ -9,7 +9,7 @@ import Control.Monad.Eff.Console (log, CONSOLE)
 import Control.Monad.Eff.Timer (TIMER)
 import Control.XStream (filter, startWith, Stream, STREAM, defaultListener, addListener, periodic)
 import DOM (DOM)
-import Data.Tuple.Nested ((/\))
+import Data.Tuple.Nested (tuple2)
 
 main :: forall e.
   Eff
@@ -25,10 +25,11 @@ main =
     run2 sinks drivers
     where
       sinks timer _ =
-        (empty :: Stream Unit) /\ (show <$> timer)
+        tuple2 (empty :: Stream Unit) (show <$> timer)
       drivers =
-        (  (\_ -> filter (_ > 0) <$> startWith (-1) <$> periodic 1000)
-        /\ (\s -> do
+        tuple2
+          (\_ -> filter (_ > 0) <$> startWith (-1) <$> periodic 1000)
+          (\s -> do
               JQ.ready $ do
                 body <- JQ.body
                 div <- JQ.create "<div>"
@@ -43,4 +44,4 @@ main =
                         log x
                         JQ.setText x h2
                     }
-                  s))
+                  s)
