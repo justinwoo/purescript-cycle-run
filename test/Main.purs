@@ -12,7 +12,7 @@ import Control.Monad.Eff.Ref (readRef, modifyRef, newRef, REF)
 import Control.XStream (STREAM, Stream, fromArray, addListener)
 import Data.Array (snoc)
 import Data.Either (fromRight)
-import Data.Tuple.Nested ((/\))
+import Data.Tuple.Nested (tuple2, tuple3, tuple4, tuple5)
 import Partial.Unsafe (unsafePartial)
 import Test.Unit (Test, test, suite)
 import Test.Unit.Assert (equal)
@@ -58,34 +58,34 @@ main = runTest do
     test "run2" do
       makeAff \reject resolve ->
         run2
-          (\a b -> (fromArray [1,2,3]) /\ (fromArray [4,5,6]))
-          (  (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
-          /\ (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
-          )
+          (\a b -> tuple2 (fromArray [1,2,3]) (fromArray [4,5,6]))
+          $ tuple2
+            (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
+            (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
     test "run3" do
       makeAff \reject resolve ->
         run3
-          (\a b c -> (fromArray [1,2,3]) /\ (fromArray [4,5,6]) /\ (fromArray [7,8,9]))
-          (  (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
-          /\ (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
-          /\ (\sink -> void $ runAff reject resolve $ expectStream [7,8,9] sink)
-          )
+          (\a b c -> tuple3 (fromArray [1,2,3]) (fromArray [4,5,6]) (fromArray [7,8,9]))
+          $ tuple3
+            (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
+            (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
+            (\sink -> void $ runAff reject resolve $ expectStream [7,8,9] sink)
     test "run4" do
       makeAff \reject resolve ->
         run4
-          (\a b c d -> (fromArray [1,2,3]) /\ (fromArray [4,5,6]) /\ (fromArray [7,8,9]) /\ (fromArray [10,11,12]))
-          (  (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
-          /\ (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
-          /\ (\sink -> void $ runAff reject resolve $ expectStream [7,8,9] sink)
-          /\ (\sink -> void $ runAff reject resolve $ expectStream [10,11,12] sink)
-          )
+          (\a b c d -> tuple4 (fromArray [1,2,3]) (fromArray [4,5,6]) (fromArray [7,8,9]) (fromArray [10,11,12]))
+          $ tuple4
+            (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
+            (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
+            (\sink -> void $ runAff reject resolve $ expectStream [7,8,9] sink)
+            (\sink -> void $ runAff reject resolve $ expectStream [10,11,12] sink)
     test "run5" do
       makeAff \reject resolve ->
         run5
-          (\a b c d e -> (fromArray [1,2,3]) /\ (fromArray [4,5,6]) /\ (fromArray [7,8,9]) /\ (fromArray [10,11,12]) /\ (fromArray [13,14,15]))
-          (  (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
-          /\ (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
-          /\ (\sink -> void $ runAff reject resolve $ expectStream [7,8,9] sink)
-          /\ (\sink -> void $ runAff reject resolve $ expectStream [10,11,12] sink)
-          /\ (\sink -> void $ runAff reject resolve $ expectStream [13,14,15] sink)
-          )
+          (\a b c d e -> tuple5 (fromArray [1,2,3]) (fromArray [4,5,6]) (fromArray [7,8,9]) (fromArray [10,11,12]) (fromArray [13,14,15]))
+          $ tuple5
+            (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
+            (\sink -> void $ runAff reject resolve $ expectStream [4,5,6] sink)
+            (\sink -> void $ runAff reject resolve $ expectStream [7,8,9] sink)
+            (\sink -> void $ runAff reject resolve $ expectStream [10,11,12] sink)
+            (\sink -> void $ runAff reject resolve $ expectStream [13,14,15] sink)

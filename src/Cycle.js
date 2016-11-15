@@ -16,7 +16,7 @@ exports._run1 = function (_main, _driver) {
     }
     var drivers = {
       a: makeDriver(_driver)
-    }
+    };
     return Cycle.run(main, drivers);
   };
 };
@@ -27,13 +27,13 @@ exports._run2 = function (_main, _drivers) {
       var sinks = _main(sources.a)(sources.b);
       return {
         a: sinks.value0,
-        b: sinks.value1
+        b: sinks.value1.value0
       };
     }
     var drivers = {
       a: makeDriver(_drivers.value0),
-      b: makeDriver(_drivers.value1)
-    }
+      b: makeDriver(_drivers.value1.value0)
+    };
     return Cycle.run(main, drivers);
   };
 };
@@ -43,16 +43,16 @@ exports._run3 = function (_main, _drivers) {
     function main(sources) {
       var sinks = _main(sources.a)(sources.b)(sources.c);
       return {
-        a: sinks.value0.value0,
-        b: sinks.value0.value1,
-        c: sinks.value1
+        a: sinks.value0,
+        b: sinks.value1.value0,
+        c: sinks.value1.value1.value0
       };
     }
     var drivers = {
-      a: makeDriver(_drivers.value0.value0),
-      b: makeDriver(_drivers.value0.value1),
-      c: makeDriver(_drivers.value1)
-    }
+      a: makeDriver(_drivers.value0),
+      b: makeDriver(_drivers.value1.value0),
+      c: makeDriver(_drivers.value1.value1.value0)
+    };
     return Cycle.run(main, drivers);
   };
 };
@@ -62,19 +62,18 @@ exports._run4 = function (_main, _drivers) {
     function main(sources) {
       var sinks = _main(sources.a)(sources.b)(sources.c)(sources.d);
       return {
-        a: sinks.value0.value0.value0,
-        b: sinks.value0.value0.value1,
-        c: sinks.value0.value1,
-        d: sinks.value1
+        a: sinks.value0,
+        b: sinks.value1.value0,
+        c: sinks.value1.value1.value0,
+        d: sinks.value1.value1.value1.value0
       };
     }
-
     var drivers = {
-      a: makeDriver(_drivers.value0.value0.value0),
-      b: makeDriver(_drivers.value0.value0.value1),
-      c: makeDriver(_drivers.value0.value1),
-      d: makeDriver(_drivers.value1)
-    }
+      a: makeDriver(_drivers.value0),
+      b: makeDriver(_drivers.value1.value0),
+      c: makeDriver(_drivers.value1.value1.value0),
+      d: makeDriver(_drivers.value1.value1.value1.value0)
+    };
     return Cycle.run(main, drivers);
   };
 };
@@ -84,20 +83,20 @@ exports._run5 = function (_main, _drivers) {
     function main(sources) {
       var sinks = _main(sources.a)(sources.b)(sources.c)(sources.d)(sources.e);
       return {
-        a: sinks.value0.value0.value0.value0,
-        b: sinks.value0.value0.value0.value1,
-        c: sinks.value0.value0.value1,
-        d: sinks.value0.value1,
-        e: sinks.value1
+        a: sinks.value0,
+        b: sinks.value1.value0,
+        c: sinks.value1.value1.value0,
+        d: sinks.value1.value1.value1.value0,
+        e: sinks.value1.value1.value1.value1.value0
       };
     }
     var drivers = {
-      a: makeDriver(_drivers.value0.value0.value0.value0),
-      b: makeDriver(_drivers.value0.value0.value0.value1),
-      c: makeDriver(_drivers.value0.value0.value1),
-      d: makeDriver(_drivers.value0.value1),
-      e: makeDriver(_drivers.value1)
-    }
+      a: makeDriver(_drivers.value0),
+      b: makeDriver(_drivers.value1.value0),
+      c: makeDriver(_drivers.value1.value1.value0),
+      d: makeDriver(_drivers.value1.value1.value1.value0),
+      e: makeDriver(_drivers.value1.value1.value1.value1.value0)
+    };
     return Cycle.run(main, drivers);
   };
 };

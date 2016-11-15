@@ -12,12 +12,11 @@
     "output"
   ],
   "dependencies": {
-    "purescript-console": "^1.0.0",
-    "purescript-xstream": "^0.3.0"
+    "purescript-console": "^2.0.0",
+    "purescript-xstream": "^0.5.0"
   },
   "devDependencies": {
-    "purescript-psci-support": "^1.0.0",
-    "purescript-test-unit": "^9.0.0"
+    "purescript-test-unit": "^10.0.1"
   },
   "version": "0.1.0"
 }
