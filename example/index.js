@@ -241,7 +241,7 @@ module.exports = require('./lib/index');
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 
 var _ponyfill = require('./ponyfill');
@@ -250,12 +250,19 @@ var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var root = undefined; /* global window */
+var root; /* global window */
 
-if (typeof global !== 'undefined') {
-	root = global;
+
+if (typeof self !== 'undefined') {
+  root = self;
 } else if (typeof window !== 'undefined') {
-	root = window;
+  root = window;
+} else if (typeof global !== 'undefined') {
+  root = global;
+} else if (typeof module !== 'undefined') {
+  root = module;
+} else {
+  root = Function('return this')();
 }
 
 var result = (0, _ponyfill2['default'])(root);
@@ -318,11 +325,6 @@ function internalizeProducer(producer) {
             this.start(il);
         };
     producer._stop = producer.stop;
-}
-function compose2(f1, f2) {
-    return function composedFn(arg) {
-        return f1(f2(arg));
-    };
 }
 function and(f1, f2) {
     return function andFn(t) {
@@ -425,7 +427,7 @@ var CombineListener = (function () {
     }
     CombineListener.prototype._n = function (t) {
         var p = this.p, out = this.out;
-        if (!out)
+        if (out === NO)
             return;
         if (p.up(t, this.i)) {
             out._n(p.vals);
@@ -433,13 +435,13 @@ var CombineListener = (function () {
     };
     CombineListener.prototype._e = function (err) {
         var out = this.out;
-        if (!out)
+        if (out === NO)
             return;
         out._e(err);
     };
     CombineListener.prototype._c = function () {
         var p = this.p;
-        if (!p.out)
+        if (p.out === NO)
             return;
         if (--p.Nc === 0) {
             p.out._c();
@@ -482,8 +484,9 @@ var CombineProducer = (function () {
     CombineProducer.prototype._stop = function () {
         var s = this.insArr;
         var n = s.length;
+        var ils = this.ils;
         for (var i = 0; i < n; i++) {
-            s[i]._remove(this.ils[i]);
+            s[i]._remove(ils[i]);
         }
         this.out = NO;
         this.ils = [];
@@ -525,7 +528,7 @@ var FromPromiseProducer = (function () {
             }
         }, function (e) {
             out._e(e);
-        }).then(null, function (err) {
+        }).then(noop, function (err) {
             setTimeout(function () { throw err; });
         });
     };
@@ -557,7 +560,7 @@ var PeriodicProducer = (function () {
 }());
 exports.PeriodicProducer = PeriodicProducer;
 var DebugOperator = (function () {
-    function DebugOperator(arg, ins) {
+    function DebugOperator(ins, arg) {
         this.type = 'debug';
         this.ins = ins;
         this.out = NO;
@@ -1041,11 +1044,18 @@ var FilterMapOperator = (function (_super) {
         this.type = 'filter+map';
         this.passes = passes;
     }
-    FilterMapOperator.prototype._n = function (v) {
-        if (this.passes(v)) {
-            _super.prototype._n.call(this, v);
+    FilterMapOperator.prototype._n = function (t) {
+        if (!this.passes(t))
+            return;
+        var u = this.out;
+        if (u === NO)
+            return;
+        try {
+            u._n(this.project(t));
         }
-        ;
+        catch (e) {
+            u._e(e);
+        }
     };
     return FilterMapOperator;
 }(MapOperator));
@@ -1326,15 +1336,9 @@ var Stream = (function () {
      * @param {Listener<T>} listener
      */
     Stream.prototype.addListener = function (listener) {
-        if (typeof listener.next !== 'function'
-            || typeof listener.error !== 'function'
-            || typeof listener.complete !== 'function') {
-            throw new Error('stream.addListener() requires all three next, error, ' +
-                'and complete functions.');
-        }
-        listener._n = listener.next;
-        listener._e = listener.error;
-        listener._c = listener.complete;
+        listener._n = listener.next || noop;
+        listener._e = listener.error || noop;
+        listener._c = listener.complete || noop;
         this._add(listener);
     };
     /**
@@ -1568,12 +1572,6 @@ var Stream = (function () {
         var ctor = this.ctor();
         if (p instanceof FilterOperator) {
             return new ctor(new FilterMapOperator(p.passes, project, p.ins));
-        }
-        if (p instanceof FilterMapOperator) {
-            return new ctor(new FilterMapOperator(p.passes, compose2(project, p.project), p.ins));
-        }
-        if (p instanceof MapOperator) {
-            return new ctor(new MapOperator(compose2(project, p.project), p.ins));
         }
         return new ctor(new MapOperator(project, this));
     };
@@ -1883,7 +1881,7 @@ var Stream = (function () {
      * @return {Stream}
      */
     Stream.prototype.debug = function (labelOrSpy) {
-        return new (this.ctor())(new DebugOperator(labelOrSpy, this));
+        return new (this.ctor())(new DebugOperator(this, labelOrSpy));
     };
     /**
      * *imitate* changes this current Stream to emit the same events that the
@@ -2106,10 +2104,29 @@ var MemoryStream = (function (_super) {
         _super.prototype._n.call(this, x);
     };
     MemoryStream.prototype._add = function (il) {
-        if (this._has) {
-            il._n(this._v);
+        var ta = this._target;
+        if (ta !== NO)
+            return ta._add(il);
+        var a = this._ils;
+        a.push(il);
+        if (a.length > 1) {
+            if (this._has)
+                il._n(this._v);
+            return;
         }
-        _super.prototype._add.call(this, il);
+        if (this._stopID !== NO) {
+            if (this._has)
+                il._n(this._v);
+            clearTimeout(this._stopID);
+            this._stopID = NO;
+        }
+        else if (this._has)
+            il._n(this._v);
+        else {
+            var p = this._prod;
+            if (p !== NO)
+                p._start(this);
+        }
     };
     MemoryStream.prototype._stopNow = function () {
         this._has = false;

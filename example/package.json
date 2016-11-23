@@ -15,6 +15,6 @@
   "license": "MIT",
   "dependencies": {
     "@cycle/xstream-run": "^3.1.0",
-    "xstream": "^7.0.0"
+    "xstream": "^8.0.0"
   }
 }
