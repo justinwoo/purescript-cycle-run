@@ -50,6 +50,11 @@ main :: forall e.
     Unit
 main = runTest do
   suite "Cycle" do
+    test "run" do
+      makeAff \reject resolve ->
+        run1
+          (\_ -> fromArray [1,2,3])
+          (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
     test "run1" do
       makeAff \reject resolve ->
         run1
