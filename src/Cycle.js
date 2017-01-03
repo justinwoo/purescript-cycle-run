@@ -10,8 +10,9 @@ function makeDriver(eff) {
 exports._run1 = function (_main, _driver) {
   return function () {
     function main(sources) {
+      var sink = _main(sources.a);
       return {
-        a: _main(sources)
+        a: sink
       };
     }
     var drivers = {

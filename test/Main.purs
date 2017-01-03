@@ -1,8 +1,9 @@
 module Test.Main where
 
 import Prelude
+import Control.Alt ((<|>))
 import Control.Alternative (empty)
-import Control.Cycle (CYCLE, run1, run2, run3, run4, run5)
+import Control.Cycle (CYCLE, run, run1, run2, run3, run4, run5)
 import Control.Monad.Aff (Aff, runAff, makeAff, liftEff')
 import Control.Monad.Aff.AVar (AVAR)
 import Control.Monad.Aff.Console (CONSOLE)
@@ -52,9 +53,12 @@ main = runTest do
   suite "Cycle" do
     test "run" do
       makeAff \reject resolve ->
-        run1
-          (\_ -> fromArray [1,2,3])
-          (\sink -> void $ runAff reject resolve $ expectStream [1,2,3] sink)
+        run
+          (\sink -> (_ * 2) <$> sink <|> fromArray [1,2,3])
+          (\sink -> do
+            void $ runAff reject resolve $ expectStream [2,4,6,1,2,3] sink
+            pure $ fromArray [1,2,3]
+          )
     test "run1" do
       makeAff \reject resolve ->
         run1

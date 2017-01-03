@@ -13,7 +13,7 @@
   ],
   "dependencies": {
     "purescript-console": "^2.0.0",
-    "purescript-xstream": "^0.6.0"
+    "purescript-xstream": "^0.6.1"
   },
   "devDependencies": {
     "purescript-test-unit": "^10.0.1"
