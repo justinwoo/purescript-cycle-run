@@ -1,5 +1,5 @@
 var Cycle = require('@cycle/xstream-run');
-var xs = require('xstream');
+var xs = require('xstream').default;
 
 function makeDriver(eff) {
   return function (sink) {
@@ -9,16 +9,19 @@ function makeDriver(eff) {
 
 exports._run1 = function (_main, _driver) {
   return function () {
-    function main(sources) {
-      var sink = _main(sources.a);
-      return {
-        a: sink
-      };
-    }
-    var drivers = {
-      a: makeDriver(_driver)
+    const stream = xs.create();
+
+    const observer = {
+      next: function (x) { stream.shamefullySendNext(x); },
+      error: function (err) { stream.shamefullySendError(err); },
+      complete: function () { stream.shamefullySendComplete(); },
     };
-    return Cycle.run(main, drivers);
+
+    var source = _driver(stream)();
+
+    var sink = _main(source);
+
+    sink.addListener(observer);
   };
 };
 
