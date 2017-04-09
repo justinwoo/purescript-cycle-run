@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pulp browserify --to index.js",
-    "start": "pulp -w browserify --to index.js"
+    "build": "pulp browserify --to dist/index.js",
+    "start": "pulp -w browserify --to dist/index.js"
   },
   "author": "",
   "license": "MIT",
