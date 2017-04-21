@@ -1,7 +1,7 @@
 # purescript-cycle-run
 
 A purescript interface for [Cycle.js](http://cycle.js.org/) using
-[@cycle/xstream-run](https://github.com/cyclejs/cyclejs/tree/master/xstream-run).
+[@cycle/run](https://github.com/cyclejs/cyclejs/tree/master/run).
 
 Requires `purescript-xstream`
 

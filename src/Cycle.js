@@ -1,4 +1,4 @@
-var Cycle = require('@cycle/xstream-run');
+var Cycle = require('@cycle/run');
 
 exports._run = function (_main, _driver) {
   return function () {
