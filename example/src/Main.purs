@@ -1,23 +1,15 @@
 module Main where
 
 import Prelude
-import Control.Monad.Eff.JQuery as JQ
-import Control.Cycle (run)
+
+import Control.Cycle (runRecord)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.Eff.JQuery as JQ
 import Control.Monad.Eff.Timer (TIMER)
 import Control.XStream (STREAM, Stream, addListener, defaultListener, periodic, startWith)
 import DOM (DOM)
-import Data.Generic (class Generic, gShow)
-
-data Query
-  = Timer Int
-
-data Command
-  = Display String
-derive instance genericCommand :: Generic Command
-instance showCommand :: Show Command where
-  show = gShow
+import Data.Monoid (mempty)
 
 type AppEff e =
     Eff
@@ -28,27 +20,24 @@ type AppEff e =
     | e
     )
 
-main_ :: Stream Query -> Stream Command
-main_ queries =
-  inner <$> queries
-  where
-    inner (Timer x) =
-      Display (show x)
+main_ :: { display :: Stream Unit, timer :: Stream Int } -> { display :: Stream String, timer :: Stream Unit }
+main_ {timer} =
+  { display: show <$> timer
+  , timer: mempty
+  }
 
 driver :: forall e.
-  Stream Command
-  -> AppEff e (Stream Query)
-driver commands = do
-  logCommands
-  display
-  ticks <- startWith (0) <$> periodic 1000
-  pure $ Timer <$> ticks
+  { display :: Stream String -> AppEff e (Stream Unit)
+  , timer :: Stream Unit -> AppEff e (Stream Int)
+  }
+driver =
+  { display
+  , timer
+  }
   where
-    logCommands =
-      addListener
-        defaultListener
-        commands
-    display = do
+    timer _ = do
+      startWith 0 <$> periodic 1000
+    display strings = do
       JQ.ready $ do
         body <- JQ.body
         div <- JQ.create "<div>"
@@ -61,10 +50,9 @@ driver commands = do
           defaultListener
             { next = \x -> JQ.setText x h2
             }
-          $ commands >>=
-            case _ of
-              Display xs -> pure xs
+          strings
+      pure mempty
 
 main :: forall e. AppEff e Unit
 main =
-    void $ run main_ driver
+    void $ runRecord main_ driver
