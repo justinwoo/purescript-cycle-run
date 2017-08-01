@@ -3,7 +3,7 @@ module Test.Main where
 import Prelude
 import Control.Alt ((<|>))
 import Control.Alternative (empty)
-import Control.Cycle (run)
+import Control.Cycle (run, runRecord)
 import Control.Monad.Aff (Aff, runAff, makeAff, liftEff')
 import Control.Monad.Aff.AVar (AVAR)
 import Control.Monad.Aff.Console (CONSOLE)
@@ -70,6 +70,8 @@ main :: forall e.
     Unit
 main = runTest do
   suite "Cycle" do
+    test "test" do
+      expectStream [1] (fromArray [1])
     test "run" do
       makeAff \reject resolve ->
         void $ run
@@ -78,3 +80,11 @@ main = runTest do
             void $ runAff reject resolve $ expectStream [2,4,6,1,2,3] sink
             pure $ fromArray [1,2,3]
           )
+    test "runRecord" do
+      makeAff \reject resolve ->
+        void $ runRecord
+          (\sources -> {a: fromArray [1,2,3] <|> sources.a})
+          {a: \sink -> do
+            void $ runAff reject resolve $ expectStream [1,2,3,4,5,6] sink
+            pure $ fromArray [4,5,6]
+          }

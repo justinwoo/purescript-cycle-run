@@ -20,3 +20,29 @@ exports._run = function (_main, _driver) {
     };
   };
 };
+
+function wrapDriver(eff) {
+  return function (sink) {
+    return eff(sink)();
+  }
+}
+
+exports._runRecord = function (main, _driver) {
+  return function () {
+    var driver = {};
+    var keys = Object.keys(_driver);
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var eff = _driver[key];
+      driver[key] = wrapDriver(eff);
+    }
+
+    var dispose = Cycle.run(main, driver);
+    
+    return function (unit) {
+      return function () {
+        dispose();
+      };
+    };
+  };
+};
