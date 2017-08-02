@@ -81,10 +81,17 @@ main = runTest do
             pure $ fromArray [1,2,3]
           )
     test "runRecord" do
-      makeAff \reject resolve ->
+      makeAff \reject resolve -> do
+        let drivers =
+              { a: \sink -> do
+                  void $ runAff reject resolve $ expectStream [1,2,3,4,5,6] sink
+                  pure $ fromArray [4,5,6]
+              , b: const $ pure unit
+              } :: { a :: Stream Int -> Eff _ (Stream Int), b :: Stream Unit -> Eff _ Unit }
+        let main' sources =
+              { a: fromArray [1,2,3] <|> sources.a
+              , b: fromArray [unit]
+              } :: { a :: Stream Int, b :: Stream Unit }
         void $ runRecord
-          (\sources -> {a: fromArray [1,2,3] <|> sources.a})
-          {a: \sink -> do
-            void $ runAff reject resolve $ expectStream [1,2,3,4,5,6] sink
-            pure $ fromArray [4,5,6]
-          }
+          main'
+          drivers

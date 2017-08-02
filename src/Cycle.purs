@@ -58,9 +58,9 @@ class CycleRunRowList (sourceList :: RowList) (sinkList :: RowList) (driverList 
 instance cycleRunRowListCons ::
   ( CycleRunRowList sourceTail sinkTail driverTail
   ) => CycleRunRowList
-    (Cons k (Stream b) sourceTail)
+    (Cons k b sourceTail)
     (Cons k (Stream a) sinkTail)
-    (Cons k ((Stream a) -> Eff e (Stream b)) driverTail)
+    (Cons k ((Stream a) -> Eff e b) driverTail)
 
 instance cycleRunRowListNil :: CycleRunRowList Nil Nil Nil
 
