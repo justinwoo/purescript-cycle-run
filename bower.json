@@ -13,12 +13,12 @@
   ],
   "dependencies": {
     "purescript-console": "^3.0.0",
-    "purescript-xstream": "^0.9.1",
+    "purescript-xstream": "^1.0.0",
     "purescript-typelevel-prelude": "^2.5.0",
     "purescript-record": "^0.2.4"
   },
   "devDependencies": {
-    "purescript-test-unit": "git://github.com/dgendill/purescript-test-unit#2311b8907d256aba4421584f583534b947a3e454"
+    "purescript-test-unit": "v13.0.0"
   },
   "version": "0.1.0"
 }

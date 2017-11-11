@@ -29,7 +29,7 @@ runRecord :: forall sources sinks drivers e
   -> Record drivers
   -> Eff e (Dispose e)
 runRecord = runFn2 _runRecord
-  
+
 foreign import _runRecord :: forall main drivers e. Fn2
   main
   drivers
@@ -37,7 +37,7 @@ foreign import _runRecord :: forall main drivers e. Fn2
 
 class CycleRunRecord (sourceRow :: # Type) (sinkRow :: # Type) (driverRow :: # Type)
   | sourceRow -> sinkRow driverRow
-  , sinkRow -> sourceRow driverRow 
+  , sinkRow -> sourceRow driverRow
   , driverRow -> sourceRow sinkRow
 
 instance cycleRunRecord ::

@@ -8,8 +8,8 @@
   ],
   "dependencies": {
     "purescript-console": "^3.0.0",
-    "purescript-xstream": "^0.9.1",
+    "purescript-xstream": "^1.0.0",
     "purescript-cycle-run": "../",
-    "purescript-jquery": "^4.2.1"
+    "purescript-jquery": "^4.3.0"
   }
 }
